@@ -1,0 +1,1 @@
+powershell.exe -executionpolicy remotesigned -File C:\Apollo_m3u_2_strm\ApolloGroup.ps1
