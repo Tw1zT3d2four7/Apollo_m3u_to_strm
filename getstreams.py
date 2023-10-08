@@ -203,3 +203,87 @@ for root, dirs, files in os.walk(".", topdown=False):
 
 #change back to script folder
 os.chdir('../')
+
+#-------------------------------process live tv stuff----------------------------
+
+livetv_vod_urls = []
+ok_livetv_vod_urls = []
+livetv_vod_subfolder = 'LiveTv'
+time_threshold = time.time() - 48 * 3600  # 48 hours in seconds
+
+#check if TV VOD subfolder exists and handle it
+if not os.path.exists(livetv_vod_subfolder):
+	print('folder does not exist')
+	quit()
+
+#check if TV VOD url file exists
+if not os.path.exists('livetv_vod_urls.txt'):
+	print('file does not exist')
+	quit()
+
+#open TV VOD file and read lines 
+with open('livetv_vod_urls.txt') as livetv_vod_url_file:
+	livetv_vod_urls = livetv_vod_url_file.readlines()
+
+#strip return chars from read lines
+livetv_vod_urls = numpy.char.strip(livetv_vod_urls)
+
+#filter out URLS that don't return 200
+ok_livetv_vod_urls[:] = filter(url_checker, livetv_vod_urls)
+
+#set up parser
+parser = M3uParser(timeout=10, useragent='"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36"')
+
+#parse all URLs, convert to JSON and put them into a dictionary object
+stream_list = ''
+
+for url in ok_livetv_vod_urls:
+	parser.parse_m3u(url)
+	json_string = parser.get_json()
+	if stream_list:
+		stream_list += json.loads(json_string)
+	else:
+		stream_list = json.loads(json_string)
+
+#change into tv subfolder 
+os.chdir(livetv_vod_subfolder)
+
+#process the streams into strm files, using sanitize_filename to remove invalid characters from folder/file names
+for item in stream_list:
+	category = sanitize_filename(item.get('category'))
+	name = sanitize_filename(item.get('name'))
+	category = remove_duplicate_year(category)
+	name = remove_duplicate_year(name)
+	url = item.get('url')
+	if not os.path.exists(category):
+		os.makedirs(category)
+	file = open(category + '/' + name + '.strm', 'w+')
+	file.write(url)
+	file.close()
+
+
+#clean up files older than 48h and remove any empty folders (windows)
+#walk through all subdirectories and files within the current directory
+for root, dirs, files in os.walk(".", topdown=False):
+    for file in files:
+        # Get the full path of the file
+        filepath = os.path.join(root, file)
+
+        # Check if the file has not been modified in the last 48 hours
+        if os.path.getmtime(filepath) < time_threshold:
+            # Delete the file
+            os.remove(filepath)
+            print(f"Deleted {filepath}")
+
+    for dir in dirs:
+        # Get the full path of the directory
+        dirpath = os.path.join(root, dir)
+
+        # Check if the directory is empty
+        if is_empty_dir(dirpath):
+            # Delete the directory
+            os.rmdir(dirpath)
+            print(f"Deleted empty directory {dirpath}")
+
+#change back to script folder
+os.chdir('../')
