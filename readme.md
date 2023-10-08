@@ -33,10 +33,13 @@ pip install numpy
 
 Download getstreams.py to a folder where you're going to create your library of .strm files. 
 
-Create a subfolder named TV and another named Movies
+Create a subfolder named TV and another named Movies & one named LiveTv
 
 Create a file in the same folder as getstreams.py named movie_vod_urls.txt that contains the following line:
 https://tvnow.best/api/list/YOUR_USERNAME/YOUR_PASSWORD/m3u8/movies
+
+Create a file in the same folder as getstreams.py named livetv_vod_urls.txt that contains the following line:
+https://tvnow.best/api/list/YOUR_USERNAME/YOUR_PASSWORD/m3u8/livetv
 
 Create a file in the same folder as getstreams.py named tv_vod_urls.txt that contains the following lines: 
 https://tvnow.best/api/list/YOUR_USERNAME/YOUR_PASSWORD/m3u8/tvshows/1
@@ -69,6 +72,12 @@ https://tvnow.best/api/list/YOUR_USERNAME/YOUR_PASSWORD/m3u8/tvshows/1
 #https://tvnow.best/api/list/YOUR_USERNAME/YOUR_PASSWORD/m3u8/tvshows/28
 #https://tvnow.best/api/list/YOUR_USERNAME/YOUR_PASSWORD/m3u8/tvshows/29
 #https://tvnow.best/api/list/YOUR_USERNAME/YOUR_PASSWORD/m3u8/tvshows/30
+
+You may use the preconfigured setup in the Apollo_m3u_2_strm.rar just unrar
+and place the folder in the root of C:\ DRIVE AND PLACE THE .VBS IN THE shell:startup folder.
+Access it with the windows key plus R key to being up the run tab. then type shell:startup and
+hit enter. It will open the folder and place the .vbs in it. upon restart of the PC the program 
+will run every twelve hr's in the background --noconsole. or you may follow the directions below.
 
 Run the script by calling "python3 getstreams.py" 
 Or, create a shebang line (#!/usr/bin/python3) at the start of your file, and then set is as executable and run it directly. 
